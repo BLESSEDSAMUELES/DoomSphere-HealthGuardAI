@@ -221,10 +221,12 @@ document.addEventListener("DOMContentLoaded", () => {
             const patientNameInput = document.getElementById("patientNameInput");
             const scanTypeInput = document.getElementById("scanTypeInput");
             const bodyPartInput = document.getElementById("bodyPartInput");
+            const patientDescriptionInput = document.getElementById("patientDescriptionInput");
 
             if (patientNameInput) formData.append("patient_name", patientNameInput.value);
             if (scanTypeInput) formData.append("scan_type", scanTypeInput.value);
             if (bodyPartInput) formData.append("body_part", bodyPartInput.value);
+            if (patientDescriptionInput) formData.append("patient_description", patientDescriptionInput.value);
 
             const response = await fetch(`${API_BASE}/api/analyze`, {
                 method: "POST",
@@ -460,6 +462,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Report URL
         currentReportUrl = data.report.download_url;
+
+        // Medical Visualization
+        const medicalVizPanel = document.getElementById("medicalVizPanel");
+        const medicalVizImage = document.getElementById("medicalVizImage");
+        const vizScanId = document.getElementById("vizScanId");
+
+        if (data.images && data.images.medical_viz) {
+            medicalVizImage.src = `${API_BASE}${data.images.medical_viz}`;
+            if (vizScanId) vizScanId.textContent = data.session_id.substring(0, 8).toUpperCase();
+            medicalVizPanel.classList.remove("hidden");
+        } else {
+            if (medicalVizPanel) medicalVizPanel.classList.add("hidden");
+        }
 
         // Reset feedback form for new results
         resetFeedbackForm();

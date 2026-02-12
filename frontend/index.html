@@ -205,6 +205,14 @@
                             style="width: 100%;">
                     </div>
                 </div>
+                <div class="input-group" style="margin-top: 10px;">
+                    <label for="patientDescriptionInput"
+                        style="display: block; font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">Patient
+                        Description / Clinical History</label>
+                    <textarea id="patientDescriptionInput" class="feedback-text-input"
+                        placeholder="e.g., Patient complains of chronic cough and chest pain..."
+                        style="width: 100%; height: 80px; resize: vertical; margin-bottom: 10px; padding: 8px;"></textarea>
+                </div>
             </div>
             <div class="upload-zone" id="uploadZone">
                 <div class="upload-zone-content" id="uploadContent">
@@ -332,6 +340,39 @@
                 <span class="summary-conf" id="modelDevice">—</span>
             </div>
         </div>
+        </div>
+
+        <!-- Medical Visualization -->
+        <div class="medical-viz-panel hidden" id="medicalVizPanel" style="margin-top: 2rem; margin-bottom: 2rem;">
+            <div class="findings-header" style="margin-bottom: 1rem;">
+                <h3 style="display: flex; align-items: center; gap: 0.5rem; color: var(--text-primary);">
+                    <i data-lucide="monitor-smartphone"></i>
+                    3D Medical Visualization
+                </h3>
+                <span class="section-badge"
+                    style="margin-left: auto; background: rgba(0, 255, 255, 0.1); color: var(--cyan); border: 1px solid var(--cyan-dim);">AI
+                    Generated</span>
+            </div>
+            <div class="viz-image-container"
+                style="position: relative; border-radius: 1rem; overflow: hidden; border: 1px solid var(--border-color); background: #000;">
+                <div class="scan-grid-overlay"
+                    style="position: absolute; inset: 0; background-image: linear-gradient(rgba(0, 255, 255, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 255, 255, 0.1) 1px, transparent 1px); background-size: 40px 40px; pointer-events: none; z-index: 1;">
+                </div>
+                <img id="medicalVizImage" src="" alt="Medical Visualization"
+                    style="width: 100%; height: auto; display: block; object-fit: cover; max-height: 600px;">
+
+                <!-- HUD Overlay Elements -->
+                <div
+                    style="position: absolute; top: 20px; left: 20px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--cyan); z-index: 2;">
+                    <div>SCAN_ID: <span id="vizScanId">...</span></div>
+                    <div>MODE: VOLUMETRIC_RENDER</div>
+                </div>
+                <div
+                    style="position: absolute; bottom: 20px; right: 20px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--cyan); text-align: right; z-index: 2;">
+                    <div>NVIDIA CLARA / MONAI</div>
+                    <div>RENDERING_ENGINE: SDXL-TURBO</div>
+                </div>
+            </div>
         </div>
 
         <!-- Image Analysis Removed -->

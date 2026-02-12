@@ -4,6 +4,8 @@ Provides REST API endpoints for medical scan analysis.
 """
 
 import os
+from dotenv import load_dotenv
+load_dotenv()
 import uuid
 import json
 import shutil
@@ -155,6 +157,7 @@ def analyze_scan():
         patient_name = request.form.get("patient_name", "")
         scan_type_input = request.form.get("scan_type", "")
         body_part = request.form.get("body_part", "")
+        patient_description = request.form.get("patient_description", "")
         
         # Use user input for scan type if provided, otherwise use classifier result
         final_scan_type = scan_type_input if scan_type_input else scan_type_result.get("scan_type", "Unknown")
@@ -165,7 +168,8 @@ def analyze_scan():
             output_dir=results_dir,
             patient_name=patient_name,
             scan_type=final_scan_type,
-            body_part=body_part
+            body_part=body_part,
+            patient_description=patient_description
         )
 
         # Step 3: Generate PDF report
@@ -212,10 +216,12 @@ def analyze_scan():
                 "primary_finding": analysis_result["primary_finding"],
                 "description": analysis_result["findings"][0].get("description", ""),
                 "model_info": analysis_result["model_info"],
+                "detailed_report": analysis_result.get("detailed_report"),
             },
             "images": {
                 "heatmap": f"/api/results/{session_id}/{analysis_result['heatmap_path']}",
                 "annotated": f"/api/results/{session_id}/{analysis_result['annotated_path']}",
+                "medical_viz": f"/api/results/{session_id}/{analysis_result['medical_viz_path']}" if analysis_result.get('medical_viz_path') else None,
             },
             "report": {
                 "filename": report_filename,
