@@ -217,6 +217,15 @@ document.addEventListener("DOMContentLoaded", () => {
             const formData = new FormData();
             formData.append("image", selectedFile);
 
+            // Add metadata for professional report
+            const patientNameInput = document.getElementById("patientNameInput");
+            const scanTypeInput = document.getElementById("scanTypeInput");
+            const bodyPartInput = document.getElementById("bodyPartInput");
+
+            if (patientNameInput) formData.append("patient_name", patientNameInput.value);
+            if (scanTypeInput) formData.append("scan_type", scanTypeInput.value);
+            if (bodyPartInput) formData.append("body_part", bodyPartInput.value);
+
             const response = await fetch(`${API_BASE}/api/analyze`, {
                 method: "POST",
                 body: formData,
@@ -280,7 +289,7 @@ document.addEventListener("DOMContentLoaded", () => {
         // Scan Type
         const scanType = data.scan_type;
         currentScanType = scanType.scan_type || "Unknown";
-        document.getElementById("scanTypeValue").textContent = scanType.scan_type;
+        // scanTypeValue removed
         // scanTypeConf removed
 
         // Update scan type in feedback panel - handled by editable input now
@@ -317,44 +326,137 @@ document.addEventListener("DOMContentLoaded", () => {
         // Findings List
         const findingsList = document.getElementById("findingsList");
         findingsList.innerHTML = "";
-        data.analysis.findings.forEach((f) => {
-            const item = document.createElement("div");
-            item.className = `finding-item severity-${f.severity}`;
-            item.innerHTML = `
-                <span class="finding-severity-badge ${f.severity}">${f.severity}</span>
-                <div class="finding-details">
-                    <div class="finding-name">${f.finding}</div>
-                    <div class="finding-description">${f.description}</div>
-                    <div class="finding-confidence">Confidence: ${f.confidence}%</div>
-                </div>
-            `;
-            findingsList.appendChild(item);
-        });
 
-        // Scan Type Bars
-        const scanBars = document.getElementById("scanTypeBars");
-        scanBars.innerHTML = "";
-        const allScores = scanType.all_scores || [];
-        allScores.forEach((item, idx) => {
-            const [name, score] = item;
-            const bar = document.createElement("div");
-            bar.className = "scan-bar";
-            bar.innerHTML = `
-                <span class="scan-bar-label">${name}</span>
-                <div class="scan-bar-track">
-                    <div class="scan-bar-fill ${idx === 0 ? "top" : ""}" style="width: 0%"></div>
-                </div>
-                <span class="scan-bar-value">${score}%</span>
-            `;
-            scanBars.appendChild(bar);
+        if (data.analysis.detailed_report) {
+            const report = data.analysis.detailed_report;
 
-            // Animate bar fill
-            requestAnimationFrame(() => {
-                setTimeout(() => {
-                    bar.querySelector(".scan-bar-fill").style.width = `${score}%`;
-                }, idx * 100);
+            // Container
+            const container = document.createElement("div");
+            container.className = "report-container";
+
+            // 1. Info Grid
+            const headerVars = report.header;
+            const headerGrid = document.createElement("div");
+            headerGrid.className = "report-header-grid";
+            headerGrid.innerHTML = `
+                <div class="report-kv"><span class="report-label">Patient Name</span><span class="report-value">${headerVars.patient_name}</span></div>
+                <div class="report-kv"><span class="report-label">Modality</span><span class="report-value">${headerVars.modality}</span></div>
+                <div class="report-kv"><span class="report-label">Scan Date</span><span class="report-value">${headerVars.scan_date}</span></div>
+                <div class="report-kv"><span class="report-label">Body Part</span><span class="report-value">${headerVars.body_part}</span></div>
+                <div class="report-kv"><span class="report-label">AI Engine</span><span class="report-value">${headerVars.ai_version}</span></div>
+            `;
+            container.appendChild(headerGrid);
+
+            // 2. Structural Analysis
+            const structureSec = document.createElement("div");
+            structureSec.className = "report-section";
+            let structureHTML = `<div class="report-section-title"><i data-lucide="layers"></i>Structural Analysis</div>`;
+            for (const [region, desc] of Object.entries(report.structures)) {
+                structureHTML += `<div class="report-text-block" style="margin-bottom: 8px;"><strong>${region}:</strong> ${desc}</div>`;
+            }
+            structureSec.innerHTML = structureHTML;
+            container.appendChild(structureSec);
+
+            // 3. Metrics
+            const metricsSec = document.createElement("div");
+            metricsSec.className = "report-section";
+            let metricsHTML = `<div class="report-section-title"><i data-lucide="bar-chart-2"></i>Quantitative Metrics</div>`;
+            metricsHTML += `<table class="report-table"><thead><tr><th>Parameter</th><th>Result</th><th>Normal Range</th><th>Status</th></tr></thead><tbody>`;
+            report.metrics.forEach(m => {
+                const statusClass = m.status === 'Normal' ? 'status-normal' : m.status === 'Abnormal' ? 'status-abnormal' : 'status-review';
+                metricsHTML += `<tr><td>${m.parameter}</td><td>${m.result}</td><td>${m.normal}</td><td class="${statusClass}">${m.status}</td></tr>`;
             });
-        });
+            metricsHTML += `</tbody></table>`;
+            metricsSec.innerHTML = metricsHTML;
+            container.appendChild(metricsSec);
+
+            // 4. Risk Stratification
+            const riskSec = document.createElement("div");
+            riskSec.className = "report-section";
+            let riskHTML = `<div class="report-section-title"><i data-lucide="alert-circle"></i>Risk Stratification</div>`;
+            riskHTML += `<table class="report-table"><thead><tr><th>Pathology</th><th>Probability</th><th>Risk Category</th></tr></thead><tbody>`;
+            report.risks.forEach(r => {
+                riskHTML += `<tr><td>${r.pathology}</td><td>${r.probability}</td><td>${r.risk_category}</td></tr>`;
+            });
+            riskHTML += `</tbody></table>`;
+            riskSec.innerHTML = riskHTML;
+            container.appendChild(riskSec);
+
+            // 5. Summary
+            const summarySec = document.createElement("div");
+            summarySec.className = "report-section";
+            summarySec.innerHTML = `
+                <div class="report-section-title"><i data-lucide="file-text"></i>Clinical Interpretation</div>
+                <div class="report-text-block">${report.summary}</div>
+            `;
+            container.appendChild(summarySec);
+
+            // 6. Recommendations
+            const recSec = document.createElement("div");
+            recSec.className = "report-section";
+            let recHTML = `<div class="report-section-title"><i data-lucide="check-square"></i>Recommendations</div><ul class="report-list">`;
+            report.recommendations.forEach(r => {
+                recHTML += `<li>${r}</li>`;
+            });
+            recHTML += `</ul>`;
+            recSec.innerHTML = recHTML;
+            container.appendChild(recSec);
+
+            // 7. Confidence (Prediction Score)
+            const confSec = document.createElement("div");
+            confSec.className = "report-section";
+            confSec.innerHTML = `
+                <div class="report-section-title"><i data-lucide="shield-check"></i>AI Confidence</div>
+                 <div class="report-text-block"><strong>Overall Confidence:</strong> ${report.confidence}</div>
+            `;
+            container.appendChild(confSec);
+
+            // 8. Visual Analysis (Re-enabled per request)
+            if (data.analysis.annotated_path) {
+                const visualSec = document.createElement("div");
+                visualSec.className = "report-section";
+                visualSec.innerHTML = `
+                    <div class="report-section-title"><i data-lucide="eye"></i>Visual AI Analysis</div>
+                    <div class="report-text-block" style="margin-bottom: 12px;">
+                        The image below highlights the specific regions the AI analyzed to determine the findings. 
+                        Warmer colors (red/orange) indicate areas of high interest.
+                    </div>
+                    <div style="display: flex; justify-content: center; background: #000; padding: 10px; border-radius: 8px;">
+                        <img src="${API_BASE}/results/${data.analysis.annotated_path}" 
+                             alt="AI Analyzed Scan" 
+                             style="max-width: 100%; max-height: 400px; object-fit: contain; border-radius: 4px;">
+                    </div>
+                `;
+                container.appendChild(visualSec);
+            }
+
+            findingsList.appendChild(container);
+
+            // Initialize new icons
+            setTimeout(() => {
+                if (window.lucide) window.lucide.createIcons();
+            }, 100);
+
+        } else {
+            // Fallback to simple list
+            data.analysis.findings.forEach((f) => {
+                const item = document.createElement("div");
+                item.className = `finding-item severity-${f.severity}`;
+                item.innerHTML = `
+                    <span class="finding-severity-badge ${f.severity}">${f.severity}</span>
+                    <div class="finding-details">
+                        <div class="finding-name">${f.finding}</div>
+                        <div class="finding-description">${f.description}</div>
+                        <div class="finding-confidence">Confidence: ${f.confidence}%</div>
+                    </div>
+                `;
+                findingsList.appendChild(item);
+            });
+        }
+
+        // Scan Type Bars (Removed)
+        // const scanBars = document.getElementById("scanTypeBars");
+        // ... (removed logic)
 
         // Report URL
         currentReportUrl = data.report.download_url;

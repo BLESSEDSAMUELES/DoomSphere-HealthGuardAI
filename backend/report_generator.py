@@ -114,99 +114,225 @@ def generate_report(
     original_filename: str,
     output_dir: str,
     images_dir: str,
+    detailed_report: dict = None,
 ) -> str:
     """
-    Generate a comprehensive PDF report.
+    Generate a comprehensive professional PDF report.
     Returns the filename of the generated PDF.
     """
     pdf = MedicalReportPDF()
     pdf.alias_nb_pages()
     pdf.add_page()
 
-    # --- Report Title ---
-    pdf.set_font("Helvetica", "B", 20)
-    pdf.set_text_color(226, 232, 240)
-    pdf.cell(0, 12, "Scan Analysis Report", ln=True, align="C")
-    pdf.set_font("Helvetica", "", 9)
-    pdf.set_text_color(100, 116, 139)
     now = datetime.datetime.now()
-    pdf.cell(0, 6, f"Generated on {now.strftime('%B %d, %Y at %I:%M %p')}", ln=True, align="C")
-    pdf.ln(8)
 
-    # --- Patient / File Info ---
-    pdf.add_section_title("Scan Information")
-    pdf.add_key_value("File Name", original_filename)
-    pdf.add_key_value("Scan Type", scan_type_result.get("scan_type", "Unknown"))
-    pdf.add_key_value("Type Confidence", f"{scan_type_result.get('confidence', 0)}%")
-    pdf.add_key_value("Resolution", scan_type_result.get("features", {}).get("resolution", "N/A"))
-    pdf.add_key_value("Analysis Date", now.strftime("%Y-%m-%d %H:%M:%S"))
-    pdf.add_key_value("Model", analysis_result.get("model_info", {}).get("name", "HealthGuard AI"))
-    pdf.ln(4)
+    if detailed_report:
+        # --- Professional Header ---
+        header = detailed_report['header']
+        pdf.set_font("Helvetica", "B", 18)
+        pdf.set_text_color(226, 232, 240)
+        pdf.cell(0, 10, "Radiology Analysis Report", ln=True, align="C")
+        pdf.ln(5)
 
-    # --- Scan Type Description ---
-    desc = scan_type_result.get("description", "")
-    if desc:
-        pdf.set_font("Helvetica", "I", 8)
+        pdf.add_section_title("Patient & Scan Information")
+        pdf.add_key_value("Patient Name", header.get('patient_name', 'Anonymous Patient'))
+        pdf.add_key_value("Modality", header.get('modality', 'Unknown'))
+        pdf.add_key_value("Scan Date", header.get('scan_date', ''))
+        pdf.add_key_value("Physician", header.get('physician', ''))
+        pdf.add_key_value("Body Part", header.get('body_part', 'General'))
+        pdf.add_key_value("AI Engine", header.get('ai_version', 'HealthGuard AI'))
+        pdf.ln(6)
+
+        # --- 1. Quality Assessment ---
+        pdf.add_section_title("1. Scan Quality Assessment")
+        quality = detailed_report['quality']
+        pdf.add_key_value("Image Clarity", quality.get('image_clarity', 'N/A'))
+        pdf.add_key_value("Artifacts", quality.get('artifacts', 'None'))
+        pdf.add_key_value("Contrast Distribution", quality.get('contrast', 'Optimal'))
+        pdf.add_key_value("Slice Completeness", quality.get('slice_completeness', '100%'))
+        pdf.ln(6)
+
+        # --- 2. Structural Analysis ---
+        pdf.add_section_title("2. AI Structural Analysis")
+        pdf.set_font("Helvetica", "", 9)
         pdf.set_text_color(148, 163, 184)
-        pdf.multi_cell(0, 5, desc)
+        structures = detailed_report.get('structures', {})
+        for region, description in structures.items():
+            pdf.set_font("Helvetica", "B", 9)
+            # Calculate remaining width for description
+            # Page width - margins (left+right) - label width
+            # But we want multi_cell to start AFTER label
+            pdf.cell(50, 6, region + ":", ln=False)
+            
+            pdf.set_font("Helvetica", "", 9)
+            # Explicitly calculate available width
+            available_width = 190 - 50 # 210 - 20(margins) - 50(label)
+            
+            # Save current X, Y
+            x_after_label = pdf.get_x()
+            y_before_multicell = pdf.get_y()
+            
+            pdf.multi_cell(available_width, 6, description)
+            # Ensure we don't overlap if description was short, though multi_cell handles Y
+            # If multi_cell went to next line, get_y updated. 
+            # We just adding a small buffer or checking if we need explicit new line
+            # pdf.ln(2) is fine as multi_cell moves cursor to next line
+            pdf.ln(1)
         pdf.ln(4)
 
-    # --- Overall Assessment ---
-    pdf.add_section_title("Overall Assessment")
-    severity = analysis_result.get("overall_severity", "medium")
-    pdf.add_key_value("Overall Severity", severity.upper(), severity=severity)
-    pdf.add_key_value("Primary Finding", analysis_result.get("primary_finding", "N/A"),
-                      severity=severity)
-    pdf.ln(6)
-
-    # --- Findings ---
-    pdf.add_section_title("Detailed Findings")
-    findings = analysis_result.get("findings", [])
-    for i, finding in enumerate(findings, 1):
-        if pdf.get_y() > 240:
-            pdf.add_page()
-        pdf.add_finding_card(finding, i)
-
-    # --- Images ---
-    pdf.add_page()
-    pdf.add_section_title("Visual Analysis")
-
-    # Original scan
-    # Heatmap
-    heatmap_file = analysis_result.get("heatmap_path", "")
-    heatmap_full = os.path.join(images_dir, heatmap_file)
-    if heatmap_file and os.path.exists(heatmap_full):
-        pdf.set_font("Helvetica", "B", 10)
+        # --- 3. Quantitative Metrics ---
+        pdf.add_section_title("3. Quantitative Metrics")
+        
+        # Table Header
+        pdf.set_fill_color(30, 41, 59)
+        pdf.set_font("Helvetica", "B", 8)
         pdf.set_text_color(226, 232, 240)
-        pdf.cell(0, 8, "GradCAM Heatmap Analysis", ln=True)
+        pdf.cell(50, 8, "Parameter", 1, 0, 'L', True)
+        pdf.cell(30, 8, "Result", 1, 0, 'C', True)
+        pdf.cell(40, 8, "Normal Range", 1, 0, 'C', True)
+        pdf.cell(30, 8, "Status", 1, 1, 'C', True)
+
+        # Table Rows
         pdf.set_font("Helvetica", "", 8)
         pdf.set_text_color(148, 163, 184)
-        pdf.cell(0, 5, "Warmer colors indicate regions most relevant to the AI prediction.", ln=True)
-        pdf.ln(2)
-        try:
-            pdf.image(heatmap_full, x=30, w=150)
-        except Exception:
-            pdf.cell(0, 8, "[Heatmap image could not be loaded]", ln=True)
+        for metric in detailed_report.get('metrics', []):
+            pdf.cell(50, 8, metric['parameter'], 1, 0, 'L')
+            pdf.cell(30, 8, metric['result'], 1, 0, 'C')
+            pdf.cell(40, 8, metric['normal'], 1, 0, 'C')
+            
+            status = metric['status']
+            if status == "Normal":
+                pdf.set_text_color(52, 211, 153)
+            elif status == "Abnormal" or status == "Review":
+                pdf.set_text_color(239, 68, 68)
+            else:
+                pdf.set_text_color(148, 163, 184)
+            
+            pdf.cell(30, 8, status, 1, 1, 'C')
+            pdf.set_text_color(148, 163, 184) # Reset color
         pdf.ln(6)
 
-    # Annotated
-    annotated_file = analysis_result.get("annotated_path", "")
-    annotated_full = os.path.join(images_dir, annotated_file)
-    if annotated_file and os.path.exists(annotated_full):
-        pdf.set_font("Helvetica", "B", 10)
-        pdf.set_text_color(226, 232, 240)
-        pdf.cell(0, 8, "Annotated Regions of Interest", ln=True)
-        pdf.set_font("Helvetica", "", 8)
-        pdf.set_text_color(148, 163, 184)
-        pdf.cell(0, 5,
-                 "Green boxes and yellow contours highlight AI-identified regions of interest.",
-                 ln=True)
-        pdf.ln(2)
-        try:
-            pdf.image(annotated_full, x=30, w=150)
-        except Exception:
-            pdf.cell(0, 8, "[Annotated image could not be loaded]", ln=True)
+        # --- 4. Risk Stratification ---
+        pdf.add_section_title("4. AI Risk Stratification")
+        for risk in detailed_report.get('risks', []):
+            pdf.set_font("Helvetica", "B", 9)
+            pdf.cell(60, 6, risk['pathology'], ln=False)
+            pdf.set_font("Helvetica", "", 9)
+            pdf.cell(40, 6, f"Probability: {risk['probability']}", ln=False)
+            pdf.cell(0, 6, f"Risk: {risk['risk_category']}", ln=True)
         pdf.ln(6)
+
+        # --- 5. Clinical Interpretation ---
+        pdf.add_section_title("5. Clinical Interpretation Summary")
+        pdf.set_font("Helvetica", "", 9)
+        pdf.multi_cell(0, 5, detailed_report.get('summary', ''))
+        pdf.ln(6)
+
+        # --- 6. Recommendations ---
+        pdf.add_section_title("6. Recommendations")
+        for rec in detailed_report.get('recommendations', []):
+            pdf.cell(5, 5, "-", ln=False)
+            available_width = 190 - 5
+            pdf.multi_cell(available_width, 5, rec)
+        pdf.ln(6)
+
+        # --- 7. AI Confidence ---
+        pdf.add_section_title("7. AI Confidence Statement")
+        pdf.set_font("Helvetica", "I", 9)
+        pdf.cell(0, 6, detailed_report.get('confidence', ''), ln=True)
+        pdf.ln(4)
+
+    else:
+        # Fallback for old style if detailed_report is missing
+        # --- Report Title ---
+        pdf.set_font("Helvetica", "B", 20)
+        pdf.set_text_color(226, 232, 240)
+        pdf.cell(0, 12, "Scan Analysis Report", ln=True, align="C")
+        pdf.set_font("Helvetica", "", 9)
+        pdf.set_text_color(100, 116, 139)
+        pdf.cell(0, 6, f"Generated on {now.strftime('%B %d, %Y at %I:%M %p')}", ln=True, align="C")
+        pdf.ln(8)
+
+        # --- Patient / File Info ---
+        pdf.add_section_title("Scan Information")
+        pdf.add_key_value("File Name", original_filename)
+        pdf.add_key_value("Scan Type", scan_type_result.get("scan_type", "Unknown"))
+        pdf.add_key_value("Type Confidence", f"{scan_type_result.get('confidence', 0)}%")
+        pdf.add_key_value("Resolution", scan_type_result.get("features", {}).get("resolution", "N/A"))
+        pdf.add_key_value("Analysis Date", now.strftime("%Y-%m-%d %H:%M:%S"))
+        pdf.add_key_value("Model", analysis_result.get("model_info", {}).get("name", "HealthGuard AI"))
+        pdf.ln(4)
+
+        # --- Scan Type Description ---
+        desc = scan_type_result.get("description", "")
+        if desc:
+            pdf.set_font("Helvetica", "I", 8)
+            pdf.set_text_color(148, 163, 184)
+            pdf.multi_cell(0, 5, desc)
+            pdf.ln(4)
+
+        # --- Overall Assessment ---
+        pdf.add_section_title("Overall Assessment")
+        severity = analysis_result.get("overall_severity", "medium")
+        pdf.add_key_value("Overall Severity", severity.upper(), severity=severity)
+        pdf.add_key_value("Primary Finding", analysis_result.get("primary_finding", "N/A"),
+                          severity=severity)
+        pdf.ln(6)
+
+        # --- Findings ---
+        pdf.add_section_title("Detailed Findings")
+        findings = analysis_result.get("findings", [])
+        for i, finding in enumerate(findings, 1):
+            if pdf.get_y() > 240:
+                pdf.add_page()
+            pdf.add_finding_card(finding, i)
+
+    # --- Images (Common) ---
+    heatmap_file = analysis_result.get("heatmap_path")
+    annotated_file = analysis_result.get("annotated_path")
+    
+    if heatmap_file or annotated_file:
+        pdf.add_page()
+        pdf.add_section_title("Visual Analysis")
+
+        # Original scan
+        # Heatmap
+        # Heatmap
+        if heatmap_file:
+            heatmap_full = os.path.join(images_dir, heatmap_file)
+            if os.path.exists(heatmap_full):
+                pdf.set_font("Helvetica", "B", 10)
+                pdf.set_text_color(226, 232, 240)
+                pdf.cell(0, 8, "GradCAM Heatmap Analysis", ln=True)
+                pdf.set_font("Helvetica", "", 8)
+                pdf.set_text_color(148, 163, 184)
+                pdf.cell(0, 5, "Warmer colors indicate regions most relevant to the AI prediction.", ln=True)
+                pdf.ln(2)
+                try:
+                    pdf.image(heatmap_full, x=30, w=150)
+                except Exception:
+                    pdf.cell(0, 8, "[Heatmap image could not be loaded]", ln=True)
+                pdf.ln(6)
+
+        # Annotated
+        # Annotated
+        if annotated_file:
+            annotated_full = os.path.join(images_dir, annotated_file)
+            if os.path.exists(annotated_full):
+                pdf.set_font("Helvetica", "B", 10)
+                pdf.set_text_color(226, 232, 240)
+                pdf.cell(0, 8, "Annotated Regions of Interest", ln=True)
+                pdf.set_font("Helvetica", "", 8)
+                pdf.set_text_color(148, 163, 184)
+                pdf.cell(0, 5,
+                        "Green boxes and yellow contours highlight AI-identified regions of interest.",
+                        ln=True)
+                pdf.ln(2)
+                try:
+                    pdf.image(annotated_full, x=30, w=150)
+                except Exception:
+                    pdf.cell(0, 8, "[Annotated image could not be loaded]", ln=True)
+                pdf.ln(6)
 
     # --- Disclaimer ---
     pdf.add_page()

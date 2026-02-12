@@ -180,6 +180,32 @@
         </div>
 
         <div class="upload-container">
+            <!-- New Scan Details Inputs -->
+            <div class="scan-details-inputs" style="margin-top: 20px; text-align: left; width: 100%; max-width: 400px;">
+                <div class="input-group">
+                    <label for="patientNameInput"
+                        style="display: block; font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">Patient
+                        Name (Optional)</label>
+                    <input type="text" id="patientNameInput" class="feedback-text-input" placeholder="e.g., John Doe"
+                        style="width: 100%; margin-bottom: 10px;">
+                </div>
+                <div class="input-row" style="display: flex; gap: 10px;">
+                    <div class="input-group" style="flex: 1;">
+                        <label for="scanTypeInput"
+                            style="display: block; font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">Scan
+                            Type</label>
+                        <input type="text" id="scanTypeInput" class="feedback-text-input" placeholder="e.g., CT Chest"
+                            style="width: 100%;">
+                    </div>
+                    <div class="input-group" style="flex: 1;">
+                        <label for="bodyPartInput"
+                            style="display: block; font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">Body
+                            Part</label>
+                        <input type="text" id="bodyPartInput" class="feedback-text-input" placeholder="e.g., Thorax"
+                            style="width: 100%;">
+                    </div>
+                </div>
+            </div>
             <div class="upload-zone" id="uploadZone">
                 <div class="upload-zone-content" id="uploadContent">
                     <div class="upload-icon-wrapper">
@@ -279,16 +305,7 @@
         <div class="results-container">
             <!-- Top Summary Cards -->
             <div class="summary-cards">
-                <div class="summary-card scan-type-card" id="scanTypeCard">
-                    <div class="summary-icon">
-                        <i data-lucide="scan-search"></i>
-                    </div>
-                    <div class="summary-info">
-                        <span class="summary-label">Scan Type Detected</span>
-                        <span class="summary-value" id="scanTypeValue">—</span>
-                        <!-- Removed Probability Score -->
-                    </div>
-                </div>
+                <!-- Scan Type Card Removed -->
                 <div class="summary-card severity-card" id="severityCard">
                     <div class="summary-icon">
                         <i data-lucide="alert-triangle"></i>
@@ -544,6 +561,7 @@
         <div class="training-container">
             <!-- Training Upload Zone -->
             <div class="training-card">
+
                 <div class="training-card-header">
                     <div class="training-card-icon">
                         <i data-lucide="hard-drive-upload"></i>

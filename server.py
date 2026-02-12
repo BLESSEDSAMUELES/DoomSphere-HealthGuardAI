@@ -147,10 +147,26 @@ def analyze_scan():
         scan_type_result = classify_scan_type(image)
 
         # Step 2: Analyze with ML model + generate heatmap
+        # Step 2: Analyze with ML model
         results_dir = os.path.join(RESULTS_FOLDER, session_id)
         os.makedirs(results_dir, exist_ok=True)
 
-        analysis_result = analyzer.analyze(image, results_dir)
+        # Get metadata from form
+        patient_name = request.form.get("patient_name", "")
+        scan_type_input = request.form.get("scan_type", "")
+        body_part = request.form.get("body_part", "")
+        
+        # Use user input for scan type if provided, otherwise use classifier result
+        final_scan_type = scan_type_input if scan_type_input else scan_type_result.get("scan_type", "Unknown")
+        scan_type_result["scan_type"] = final_scan_type
+
+        analysis_result = analyzer.analyze(
+            image=image, 
+            output_dir=results_dir,
+            patient_name=patient_name,
+            scan_type=final_scan_type,
+            body_part=body_part
+        )
 
         # Step 3: Generate PDF report
         report_filename = generate_report(
@@ -159,13 +175,31 @@ def analyze_scan():
             original_filename=original_filename,
             output_dir=REPORTS_FOLDER,
             images_dir=results_dir,
+            detailed_report=analysis_result.get("detailed_report")
         )
 
-        # Store session for re-analysis
+
+        # Save session data to disk for persistence (fixes "Session not found" after restart)
+        # 1. Save original image copy
+        persistence_path = os.path.join(results_dir, "original_scan.png")
+        image.save(persistence_path)
+        
+        # 2. Save metadata
+        metadata = {
+            "original_filename": original_filename,
+            "scan_type_result": scan_type_result,
+            "patient_name": patient_name,
+            "upload_path": upload_path
+        }
+        with open(os.path.join(results_dir, "session_metadata.json"), "w") as f:
+            json.dump(metadata, f)
+
+        # Store session in memory
         session_store[session_id] = {
             "upload_path": upload_path,
             "original_filename": original_filename,
             "scan_type_result": scan_type_result,
+            "persistence_path": persistence_path
         }
 
         # Build response
@@ -201,15 +235,6 @@ def analyze_scan():
 def submit_feedback():
     """
     Submit feedback to fine-tune the model via reinforcement learning.
-    Expects JSON body with:
-      - session_id: str
-      - correct_finding: str (from known findings or '__other__')
-      - custom_finding: str (text if correct_finding is '__other__')
-      - severity_correction: str (low/medium/high)
-      - notes: str
-      - description: str
-      - rating: int (1-5)
-      - scan_type: str
     """
     try:
         data = request.get_json()
@@ -217,12 +242,41 @@ def submit_feedback():
             return jsonify({"error": "No JSON data provided"}), 400
 
         session_id = data.get("session_id", "")
+        
+        # Try to recover session from disk if not in memory
+        image = None
         if session_id not in session_store:
-            return jsonify({"error": "Session not found. Please re-upload the scan."}), 404
-
-        # Load the original image
-        session_data = session_store[session_id]
-        image = Image.open(session_data["upload_path"])
+            # Check for persisted session
+            session_dir = os.path.join(RESULTS_FOLDER, session_id)
+            persisted_img = os.path.join(session_dir, "original_scan.png")
+            persisted_meta = os.path.join(session_dir, "session_metadata.json")
+            
+            if os.path.exists(persisted_img):
+                print(f"[HealthGuard] Recovered session {session_id} from disk")
+                image = Image.open(persisted_img)
+                # Ensure we have RGB
+                if image.mode != "RGB":
+                    image = image.convert("RGB")
+                    
+                # Restore to session_store for this request context
+                session_store[session_id] = {"recovered": True}
+            else:
+                return jsonify({"error": "Session not found. Please re-upload the scan."}), 404
+        else:
+            # Load from in-memory session (or original upload path)
+            session_data = session_store[session_id]
+            # Prefer persistence path if available (safer), else upload path
+            img_path = session_data.get("persistence_path", session_data.get("upload_path"))
+            if img_path and os.path.exists(img_path):
+                image = Image.open(img_path)
+            else:
+                 # One last try check results folder
+                session_dir = os.path.join(RESULTS_FOLDER, session_id)
+                persisted_img = os.path.join(session_dir, "original_scan.png")
+                if os.path.exists(persisted_img):
+                    image = Image.open(persisted_img)
+                else:
+                    return jsonify({"error": "Original image file not found. Please re-upload."}), 404
 
         # Apply feedback to the model (reinforcement learning)
         feedback = {
