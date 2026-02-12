@@ -1,0 +1,12 @@
+flask==3.1.0
+flask-cors==5.0.1
+torch>=2.6.0
+torchvision>=0.20.0
+Pillow>=11.0.0
+numpy>=2.0.0
+opencv-python>=4.10.0
+scipy>=1.14.0
+matplotlib>=3.9.0
+fpdf2>=2.8.0
+grad-cam>=1.5.0
+gunicorn>=23.0.0

@@ -1,0 +1,18 @@
+{
+  "session_id": "eddc55e6-382",
+  "feedback": {
+    "correct_finding": "Normal - No significant findings",
+    "severity_correction": "medium",
+    "notes": "It was a CT Scan of Lung Cancer dataset",
+    "rating": 2
+  },
+  "result": {
+    "feedback_applied": true,
+    "model_updated": true,
+    "feedback_id": 1,
+    "message": "Model updated successfully. The classifier has been fine-tuned towards 'Normal - No significant findings' with loss=2.3200. The model will now produce improved predictions for similar scans.",
+    "loss": 2.32,
+    "total_feedbacks": 1
+  },
+  "original_filename": "Bengin_case_89.jpg"
+}

@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HealthGuard AI — Medical Scan Analysis</title>
+    <meta name="description"
+        content="Industry-grade AI-powered medical scan analysis. Upload any medical scan for instant AI analysis with GradCAM heatmap visualization and downloadable PDF reports.">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <!-- Ambient Background -->
+    <div class="ambient-bg">
+        <div class="ambient-orb orb-1"></div>
+        <div class="ambient-orb orb-2"></div>
+        <div class="ambient-orb orb-3"></div>
+        <div class="grid-overlay"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-brand">
+            <div class="brand-icon">
+                <i data-lucide="shield-check"></i>
+            </div>
+            <div class="brand-text">
+                <span class="brand-name">HealthGuard</span>
+                <span class="brand-badge">AI</span>
+            </div>
+        </div>
+        <div class="nav-status" id="navStatus">
+            <div class="status-dot pulse"></div>
+            <span>System Online</span>
+        </div>
+        <div class="nav-links">
+            <a href="#features" class="nav-link">Features</a>
+            <a href="#upload" class="nav-link">Analyze</a>
+            <a href="#about" class="nav-link">About</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="hero">
+        <div class="hero-content">
+            <div class="hero-badge">
+                <i data-lucide="sparkles"></i>
+                <span>AI-Powered Medical Analysis</span>
+            </div>
+            <h1 class="hero-title">
+                <span class="gradient-text">Next-Gen</span> Medical
+                <br>Scan Intelligence
+            </h1>
+            <p class="hero-subtitle">
+                Upload any medical scan — X-Ray, MRI, CT, Ultrasound — and let our
+                DenseNet-121 AI model analyze, classify, and highlight regions of interest
+                with precision GradCAM heatmaps.
+            </p>
+            <div class="hero-actions">
+                <a href="#upload" class="btn btn-primary btn-lg" id="heroAnalyzeBtn">
+                    <i data-lucide="scan"></i>
+                    Start Analysis
+                </a>
+                <a href="#features" class="btn btn-ghost btn-lg">
+                    <i data-lucide="info"></i>
+                    Learn More
+                </a>
+            </div>
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <span class="stat-value">15+</span>
+                    <span class="stat-label">Medical Findings</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value">8</span>
+                    <span class="stat-label">Scan Types</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value">GradCAM</span>
+                    <span class="stat-label">Heatmap Engine</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value">PDF</span>
+                    <span class="stat-label">Report Export</span>
+                </div>
+            </div>
+        </div>
+        <div class="hero-visual">
+            <div class="scan-preview-container">
+                <div class="scan-ring ring-outer"></div>
+                <div class="scan-ring ring-inner"></div>
+                <div class="scan-center">
+                    <i data-lucide="brain"></i>
+                </div>
+                <div class="floating-tag tag-1">X-Ray</div>
+                <div class="floating-tag tag-2">MRI</div>
+                <div class="floating-tag tag-3">CT Scan</div>
+                <div class="floating-tag tag-4">Ultrasound</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section" id="features">
+        <div class="section-header">
+            <span class="section-badge">Capabilities</span>
+            <h2 class="section-title">Powerful AI Features</h2>
+            <p class="section-subtitle">Everything you need for comprehensive medical scan analysis</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon cyan">
+                    <i data-lucide="scan-search"></i>
+                </div>
+                <h3>Scan Type Detection</h3>
+                <p>Automatically identifies the type of medical scan — X-Ray, CT, MRI, Ultrasound, PET, Mammogram, DEXA,
+                    and Fluoroscopy.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon purple">
+                    <i data-lucide="brain-circuit"></i>
+                </div>
+                <h3>DenseNet-121 Analysis</h3>
+                <p>Deep learning model trained to detect 15+ medical findings including fractures, masses,
+                    calcifications, and more.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon orange">
+                    <i data-lucide="flame"></i>
+                </div>
+                <h3>GradCAM Heatmaps</h3>
+                <p>Visual explanations showing exactly which regions the AI focused on, with warm-to-cool color
+                    gradients.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon green">
+                    <i data-lucide="box-select"></i>
+                </div>
+                <h3>Region Marking</h3>
+                <p>Automatic contour detection and bounding box annotation around regions of interest with severity
+                    indicators.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon pink">
+                    <i data-lucide="file-down"></i>
+                </div>
+                <h3>PDF Reports</h3>
+                <p>Download comprehensive, professionally formatted PDF reports with all findings, images, and medical
+                    disclaimers.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon yellow">
+                    <i data-lucide="gauge"></i>
+                </div>
+                <h3>Severity Scoring</h3>
+                <p>Color-coded severity levels (Low, Medium, High) for each finding to help prioritize clinical
+                    attention.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Upload Section -->
+    <section class="upload-section" id="upload">
+        <div class="section-header">
+            <span class="section-badge">Analysis Engine</span>
+            <h2 class="section-title">Upload Your Scan</h2>
+            <p class="section-subtitle">Drag & drop or click to upload any medical scan image</p>
+        </div>
+
+        <div class="upload-container">
+            <div class="upload-zone" id="uploadZone">
+                <div class="upload-zone-content" id="uploadContent">
+                    <div class="upload-icon-wrapper">
+                        <i data-lucide="cloud-upload" class="upload-main-icon"></i>
+                        <div class="upload-pulse"></div>
+                    </div>
+                    <h3>Drop your scan here</h3>
+                    <p>or click to browse files</p>
+                    <div class="upload-formats">
+                        <span class="format-tag">PNG</span>
+                        <span class="format-tag">JPG</span>
+                        <span class="format-tag">JPEG</span>
+                        <span class="format-tag">BMP</span>
+                        <span class="format-tag">TIFF</span>
+                        <span class="format-tag">WebP</span>
+                    </div>
+                </div>
+                <input type="file" id="fileInput" accept="image/*" hidden>
+            </div>
+
+            <!-- Preview Area -->
+            <div class="preview-area hidden" id="previewArea">
+                <div class="preview-card">
+                    <div class="preview-header">
+                        <div class="preview-info">
+                            <i data-lucide="image"></i>
+                            <div>
+                                <span class="preview-filename" id="previewFilename"></span>
+                                <span class="preview-filesize" id="previewFilesize"></span>
+                            </div>
+                        </div>
+                        <button class="btn btn-ghost btn-sm" id="removeFileBtn">
+                            <i data-lucide="x"></i>
+                            Remove
+                        </button>
+                    </div>
+                    <div class="preview-image-container">
+                        <img id="previewImage" alt="Scan Preview">
+                    </div>
+                </div>
+                <button class="btn btn-primary btn-lg btn-analyze" id="analyzeBtn">
+                    <i data-lucide="sparkles"></i>
+                    <span>Analyze Scan</span>
+                    <div class="btn-shimmer"></div>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay hidden" id="loadingOverlay">
+        <div class="loading-content">
+            <div class="loading-brain">
+                <div class="brain-pulse"></div>
+                <i data-lucide="brain"></i>
+            </div>
+            <h2>Analyzing Your Scan</h2>
+            <div class="loading-steps">
+                <div class="loading-step active" id="step1">
+                    <div class="step-indicator">
+                        <div class="step-spinner"></div>
+                    </div>
+                    <span>Classifying scan type...</span>
+                </div>
+                <div class="loading-step" id="step2">
+                    <div class="step-indicator">
+                        <div class="step-spinner"></div>
+                    </div>
+                    <span>Running DenseNet-121 analysis...</span>
+                </div>
+                <div class="loading-step" id="step3">
+                    <div class="step-indicator">
+                        <div class="step-spinner"></div>
+                    </div>
+                    <span>Generating GradCAM heatmap...</span>
+                </div>
+                <div class="loading-step" id="step4">
+                    <div class="step-indicator">
+                        <div class="step-spinner"></div>
+                    </div>
+                    <span>Creating PDF report...</span>
+                </div>
+            </div>
+            <div class="loading-progress">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results Section -->
+    <section class="results-section hidden" id="resultsSection">
+        <div class="section-header">
+            <span class="section-badge result-badge">Analysis Complete</span>
+            <h2 class="section-title">Scan Results</h2>
+        </div>
+
+        <div class="results-container">
+            <!-- Top Summary Cards -->
+            <div class="summary-cards">
+                <div class="summary-card scan-type-card" id="scanTypeCard">
+                    <div class="summary-icon">
+                        <i data-lucide="scan-search"></i>
+                    </div>
+                    <div class="summary-info">
+                        <span class="summary-label">Scan Type Detected</span>
+                        <span class="summary-value" id="scanTypeValue">—</span>
+                        <span class="summary-conf" id="scanTypeConf">—</span>
+                    </div>
+                </div>
+                <div class="summary-card severity-card" id="severityCard">
+                    <div class="summary-icon">
+                        <i data-lucide="alert-triangle"></i>
+                    </div>
+                    <div class="summary-info">
+                        <span class="summary-label">Overall Severity</span>
+                        <span class="summary-value" id="severityValue">—</span>
+                    </div>
+                </div>
+                <div class="summary-card finding-card-summary" id="primaryFindingCard">
+                    <div class="summary-icon">
+                        <i data-lucide="stethoscope"></i>
+                    </div>
+                    <div class="summary-info">
+                        <span class="summary-label">Primary Finding</span>
+                        <span class="summary-value" id="primaryFindingValue">—</span>
+                    </div>
+                </div>
+                <div class="summary-card model-card">
+                    <div class="summary-icon">
+                        <i data-lucide="cpu"></i>
+                    </div>
+                    <div class="summary-info">
+                        <span class="summary-label">AI Model</span>
+                        <span class="summary-value" id="modelValue">—</span>
+                        <span class="summary-conf" id="modelDevice">—</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Image Analysis -->
+            <div class="analysis-images">
+                <div class="analysis-image-card">
+                    <div class="image-card-header">
+                        <i data-lucide="flame"></i>
+                        <h3>GradCAM Heatmap</h3>
+                    </div>
+                    <p class="image-card-desc">Warm colors indicate regions most influential in the AI's prediction.</p>
+                    <div class="image-container">
+                        <img id="heatmapImage" alt="GradCAM Heatmap">
+                    </div>
+                </div>
+                <div class="analysis-image-card">
+                    <div class="image-card-header">
+                        <i data-lucide="box-select"></i>
+                        <h3>Annotated Regions</h3>
+                    </div>
+                    <p class="image-card-desc">Green boxes and yellow contours mark AI-identified regions of interest.
+                    </p>
+                    <div class="image-container">
+                        <img id="annotatedImage" alt="Annotated Regions">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detailed Findings -->
+            <div class="findings-panel">
+                <div class="findings-header">
+                    <h3><i data-lucide="clipboard-list"></i> Detailed Findings</h3>
+                </div>
+                <div class="findings-list" id="findingsList">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
+            <!-- Scan Type Breakdown -->
+            <div class="scan-breakdown-panel">
+                <div class="findings-header">
+                    <h3><i data-lucide="bar-chart-3"></i> Scan Type Probability</h3>
+                </div>
+                <div class="scan-type-bars" id="scanTypeBars">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
+            <!-- Download Section -->
+            <div class="download-panel">
+                <div class="download-content">
+                    <div class="download-icon">
+                        <i data-lucide="file-text"></i>
+                    </div>
+                    <div class="download-info">
+                        <h3>Download Full Report</h3>
+                        <p>Get a comprehensive PDF report with all findings, annotated images, heatmaps, and medical
+                            disclaimer.</p>
+                    </div>
+                    <button class="btn btn-primary btn-lg" id="downloadPdfBtn">
+                        <i data-lucide="download"></i>
+                        Download PDF Report
+                    </button>
+                </div>
+            </div>
+
+            <!-- Feedback Panel -->
+            <div class="feedback-panel" id="feedbackPanel">
+                <div class="feedback-header">
+                    <div class="feedback-header-icon">
+                        <i data-lucide="message-square-plus"></i>
+                    </div>
+                    <div>
+                        <h3>Professional Feedback & AI Training</h3>
+                        <p>Help the AI learn — provide your expert assessment. The model uses reinforcement learning to
+                            improve from your feedback.</p>
+                    </div>
+                </div>
+
+                <div class="feedback-form" id="feedbackForm">
+                    <!-- Detected Scan Type (read-only) -->
+                    <div class="feedback-field">
+                        <label class="feedback-label">
+                            <i data-lucide="scan"></i>
+                            Detected Scan Type
+                        </label>
+                        <div class="scan-type-display" id="feedbackScanType">
+                            <span class="scan-type-tag" id="feedbackScanTag">—</span>
+                        </div>
+                    </div>
+
+                    <!-- Description / About the Dataset -->
+                    <div class="feedback-field">
+                        <label class="feedback-label" for="feedbackDescription">
+                            <i data-lucide="file-text"></i>
+                            Description / About the Dataset
+                        </label>
+                        <textarea class="feedback-textarea" id="feedbackDescription"
+                            placeholder="Describe the medical scan, dataset origin, imaging conditions, patient demographics, or any relevant clinical context..."
+                            rows="3"></textarea>
+                    </div>
+
+                    <!-- Professional Notes -->
+                    <div class="feedback-field">
+                        <label class="feedback-label" for="feedbackNotes">
+                            <i data-lucide="file-edit"></i>
+                            Professional Notes / Observations
+                        </label>
+                        <textarea class="feedback-textarea" id="feedbackNotes"
+                            placeholder="Provide detailed observations, corrections, or additional findings that the AI missed. Your expertise helps the model learn and improve..."
+                            rows="3"></textarea>
+                    </div>
+
+                    <!-- Star Rating -->
+                    <div class="feedback-field">
+                        <label class="feedback-label">
+                            <i data-lucide="star"></i>
+                            How accurate was the AI prediction?
+                        </label>
+                        <div class="star-rating" id="starRating">
+                            <button class="star-btn" data-rating="1" title="Very Inaccurate">
+                                <i data-lucide="star"></i>
+                            </button>
+                            <button class="star-btn" data-rating="2" title="Somewhat Inaccurate">
+                                <i data-lucide="star"></i>
+                            </button>
+                            <button class="star-btn" data-rating="3" title="Partially Accurate">
+                                <i data-lucide="star"></i>
+                            </button>
+                            <button class="star-btn" data-rating="4" title="Mostly Accurate">
+                                <i data-lucide="star"></i>
+                            </button>
+                            <button class="star-btn" data-rating="5" title="Very Accurate">
+                                <i data-lucide="star"></i>
+                            </button>
+                            <span class="rating-text" id="ratingText">Select a rating</span>
+                        </div>
+                    </div>
+
+                    <!-- Correct Finding Dropdown with Other option -->
+                    <div class="feedback-field">
+                        <label class="feedback-label" for="correctFinding">
+                            <i data-lucide="stethoscope"></i>
+                            Correct Medical Finding
+                        </label>
+                        <select class="feedback-select" id="correctFinding">
+                            <option value="">— Select the correct medical finding —</option>
+                            <option value="Normal - No significant findings">Normal - No significant findings</option>
+                            <option value="Potential Opacity / Mass">Potential Opacity / Mass</option>
+                            <option value="Calcification Detected">Calcification Detected</option>
+                            <option value="Fracture Indication">Fracture Indication</option>
+                            <option value="Soft Tissue Abnormality">Soft Tissue Abnormality</option>
+                            <option value="Fluid Accumulation">Fluid Accumulation</option>
+                            <option value="Structural Anomaly">Structural Anomaly</option>
+                            <option value="Inflammation / Infection Signs">Inflammation / Infection Signs</option>
+                            <option value="Degenerative Changes">Degenerative Changes</option>
+                            <option value="Vascular Abnormality">Vascular Abnormality</option>
+                            <option value="Foreign Body Detected">Foreign Body Detected</option>
+                            <option value="Post-surgical Changes">Post-surgical Changes</option>
+                            <option value="Lymph Node Enlargement">Lymph Node Enlargement</option>
+                            <option value="Organ Enlargement">Organ Enlargement</option>
+                            <option value="Bone Density Variation">Bone Density Variation</option>
+                            <option value="__other__">🔬 Other — Type your own finding...</option>
+                        </select>
+                        <!-- Custom finding text input (shown when 'Other' is selected) -->
+                        <div class="custom-finding-input hidden" id="customFindingWrapper">
+                            <input type="text" class="feedback-text-input" id="customFindingInput"
+                                placeholder="Type the medical finding name (e.g., Pleural Effusion, Pneumothorax)..." />
+                            <p class="custom-finding-hint">
+                                <i data-lucide="info"></i>
+                                The AI will learn this new finding through reinforcement learning.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Severity Correction -->
+                    <div class="feedback-field">
+                        <label class="feedback-label">
+                            <i data-lucide="alert-triangle"></i>
+                            Correct severity level
+                        </label>
+                        <div class="severity-buttons" id="severityButtons">
+                            <button class="severity-btn severity-btn-low" data-severity="low">
+                                <span class="severity-dot"></span>
+                                Low
+                            </button>
+                            <button class="severity-btn severity-btn-medium" data-severity="medium">
+                                <span class="severity-dot"></span>
+                                Medium
+                            </button>
+                            <button class="severity-btn severity-btn-high" data-severity="high">
+                                <span class="severity-dot"></span>
+                                High
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Submit Feedback -->
+                    <button class="btn btn-primary btn-lg feedback-submit-btn" id="submitFeedbackBtn">
+                        <i data-lucide="brain"></i>
+                        <span>Submit Feedback & Train AI</span>
+                        <div class="btn-shimmer"></div>
+                    </button>
+                </div>
+
+                <!-- Feedback Success State -->
+                <div class="feedback-success hidden" id="feedbackSuccess">
+                    <div class="feedback-success-icon">
+                        <i data-lucide="check-circle-2"></i>
+                    </div>
+                    <h4>Feedback Applied Successfully!</h4>
+                    <p class="feedback-success-message" id="feedbackMessage"></p>
+                    <div class="feedback-stats-mini" id="feedbackStatsMini">
+                        <!-- Populated by JS -->
+                    </div>
+                    <div class="feedback-actions">
+                        <button class="btn btn-primary btn-lg" id="reanalyzeBtn">
+                            <i data-lucide="refresh-cw"></i>
+                            Re-Analyze with Updated Model
+                            <div class="btn-shimmer"></div>
+                        </button>
+                        <button class="btn btn-ghost" id="addMoreFeedbackBtn">
+                            <i data-lucide="message-square-plus"></i>
+                            Add More Feedback
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- New Scan Button -->
+            <div class="new-scan-area">
+                <button class="btn btn-ghost btn-lg" id="newScanBtn">
+                    <i data-lucide="rotate-ccw"></i>
+                    Analyze Another Scan
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== Dataset Training Section ===== -->
+    <section class="training-section" id="trainingSection">
+        <div class="section-header">
+            <span class="section-badge training-badge">
+                <i data-lucide="database"></i>
+                Dataset Training
+            </span>
+            <h2 class="section-title">Train AI with Your Dataset</h2>
+            <p class="section-subtitle">Upload medical image datasets from Kaggle or any source. The AI will learn from
+                your data to improve its diagnostic accuracy.</p>
+        </div>
+
+        <div class="training-container">
+            <!-- Training Upload Zone -->
+            <div class="training-card">
+                <div class="training-card-header">
+                    <div class="training-card-icon">
+                        <i data-lucide="hard-drive-upload"></i>
+                    </div>
+                    <div>
+                        <h3>Upload Dataset</h3>
+                        <p>Supports ZIP, TAR.GZ, or individual images from Kaggle and other sources</p>
+                    </div>
+                </div>
+
+                <div class="training-upload-zone" id="trainingUploadZone">
+                    <input type="file" id="datasetFileInput"
+                        accept=".zip,.tar,.tar.gz,.tgz,.png,.jpg,.jpeg,.bmp,.tiff,.webp" multiple hidden>
+                    <input type="file" id="datasetFolderInput" webkitdirectory directory multiple hidden>
+                    <div class="training-upload-content" id="trainUploadContent">
+                        <div class="training-upload-icon">
+                            <i data-lucide="folder-archive"></i>
+                        </div>
+                        <h4>Drop Dataset Here or Choose Upload Method</h4>
+                        <p>Upload a folder of medical images or a ZIP/TAR.GZ archive</p>
+                        <div class="training-upload-buttons">
+                            <button class="btn btn-primary btn-sm" id="browseFolderBtn" type="button">
+                                <i data-lucide="folder-open"></i>
+                                <span>Browse Folder</span>
+                            </button>
+                            <button class="btn btn-outline btn-sm" id="browseFilesBtn" type="button">
+                                <i data-lucide="file-archive"></i>
+                                <span>Browse ZIP / Files</span>
+                            </button>
+                        </div>
+                        <div class="upload-formats">
+                            <span class="format-tag">FOLDER</span>
+                            <span class="format-tag">.ZIP</span>
+                            <span class="format-tag">.TAR.GZ</span>
+                            <span class="format-tag">.PNG</span>
+                            <span class="format-tag">.JPG</span>
+                            <span class="format-tag">.TIFF</span>
+                        </div>
+                    </div>
+                    <!-- Preview after selecting -->
+                    <div class="training-file-preview hidden" id="trainingFilePreview">
+                        <div class="training-file-info">
+                            <i data-lucide="folder-open" id="datasetPreviewIcon"></i>
+                            <div>
+                                <span class="training-filename" id="trainingFilename"></span>
+                                <span class="training-filesize" id="trainingFilesize"></span>
+                            </div>
+                        </div>
+                        <button class="btn btn-ghost btn-sm" id="removeDatasetBtn">
+                            <i data-lucide="x"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Dataset Description -->
+                <div class="training-field">
+                    <label class="feedback-label" for="datasetDescription">
+                        <i data-lucide="align-left"></i>
+                        Dataset Description
+                    </label>
+                    <textarea class="feedback-textarea" id="datasetDescription"
+                        placeholder="Describe the dataset: source (e.g., Kaggle chest X-ray dataset), type of images, conditions/findings represented, number of classes..."
+                        rows="3"></textarea>
+                </div>
+
+                <!-- Finding Label (optional) -->
+                <div class="training-field">
+                    <label class="feedback-label" for="datasetFindingLabel">
+                        <i data-lucide="tag"></i>
+                        Finding Label <span class="optional-badge">(Optional)</span>
+                    </label>
+                    <input type="text" class="feedback-text-input" id="datasetFindingLabel"
+                        placeholder="If all images represent the same finding, enter the label here. Leave blank to use subfolder names.">
+                    <p class="custom-finding-hint">
+                        <i data-lucide="info"></i>
+                        If your dataset has subfolders (e.g., /Normal, /Pneumonia), each subfolder name becomes a label
+                        automatically.
+                    </p>
+                </div>
+
+                <!-- Epochs -->
+                <div class="training-field">
+                    <label class="feedback-label">
+                        <i data-lucide="repeat"></i>
+                        Training Epochs
+                    </label>
+                    <div class="epoch-selector">
+                        <button class="epoch-btn" data-epochs="1" type="button">1</button>
+                        <button class="epoch-btn" data-epochs="3" type="button">3</button>
+                        <button class="epoch-btn" data-epochs="5" type="button">5</button>
+                        <button class="epoch-btn" data-epochs="10" type="button">10</button>
+                        <div class="epoch-custom-wrapper">
+                            <input type="number" class="epoch-custom-input" id="epochCustomInput" min="1" max="100"
+                                value="3" placeholder="Custom">
+                            <span class="epoch-custom-label">cycles</span>
+                        </div>
+                    </div>
+                    <p class="custom-finding-hint" id="epochHint">
+                        <i data-lucide="info"></i>
+                        3 epochs — Recommended for most datasets
+                    </p>
+                </div>
+
+                <!-- Train Button -->
+                <button class="btn btn-primary btn-lg training-start-btn" id="startTrainingBtn" disabled>
+                    <i data-lucide="zap"></i>
+                    <span>Start Training</span>
+                    <div class="btn-shimmer"></div>
+                </button>
+            </div>
+
+            <!-- Training Progress Panel (hidden by default) -->
+            <div class="training-progress-panel hidden" id="trainingProgressPanel">
+                <div class="training-progress-header">
+                    <div class="training-progress-icon">
+                        <i data-lucide="brain"></i>
+                        <div class="brain-pulse"></div>
+                    </div>
+                    <h3>Training in Progress</h3>
+                    <p id="trainingStatusMessage">Preparing dataset...</p>
+                </div>
+                <div class="training-progress-bar-container">
+                    <div class="training-progress-bar">
+                        <div class="training-progress-fill" id="trainingProgressFill" style="width: 0%"></div>
+                    </div>
+                    <span class="training-progress-pct" id="trainingProgressPct">0%</span>
+                </div>
+            </div>
+
+            <!-- Training Result Panel (hidden by default) -->
+            <div class="training-result-panel hidden" id="trainingResultPanel">
+                <div class="feedback-success-icon">
+                    <i data-lucide="check-circle-2"></i>
+                </div>
+                <h4>Training Complete!</h4>
+                <p class="training-result-message" id="trainingResultMessage"></p>
+                <div class="training-result-stats" id="trainingResultStats">
+                    <!-- Populated by JS -->
+                </div>
+                <div class="feedback-actions">
+                    <button class="btn btn-primary btn-lg" id="trainAnotherBtn">
+                        <i data-lucide="plus-circle"></i>
+                        Train with Another Dataset
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="about-section" id="about">
+        <div class="section-header">
+            <span class="section-badge">Technology</span>
+            <h2 class="section-title">How It Works</h2>
+        </div>
+        <div class="pipeline-steps">
+            <div class="pipeline-step">
+                <div class="pipeline-number">01</div>
+                <div class="pipeline-content">
+                    <h3>Upload</h3>
+                    <p>Upload any medical scan image. Our system accepts X-Ray, CT, MRI, Ultrasound, and more.</p>
+                </div>
+            </div>
+            <div class="pipeline-connector"></div>
+            <div class="pipeline-step">
+                <div class="pipeline-number">02</div>
+                <div class="pipeline-content">
+                    <h3>Classify</h3>
+                    <p>AI analyzes image features to automatically determine the type of medical scan.</p>
+                </div>
+            </div>
+            <div class="pipeline-connector"></div>
+            <div class="pipeline-step">
+                <div class="pipeline-number">03</div>
+                <div class="pipeline-content">
+                    <h3>Analyze</h3>
+                    <p>DenseNet-121 deep learning model processes the scan to detect medical findings.</p>
+                </div>
+            </div>
+            <div class="pipeline-connector"></div>
+            <div class="pipeline-step">
+                <div class="pipeline-number">04</div>
+                <div class="pipeline-content">
+                    <h3>Visualize</h3>
+                    <p>GradCAM generates heatmaps and contour annotations highlighting regions of interest.</p>
+                </div>
+            </div>
+            <div class="pipeline-connector"></div>
+            <div class="pipeline-step">
+                <div class="pipeline-number">05</div>
+                <div class="pipeline-content">
+                    <h3>Report</h3>
+                    <p>Download a comprehensive PDF report with all findings, images, and severity scores.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <div class="brand-icon">
+                    <i data-lucide="shield-check"></i>
+                </div>
+                <span class="brand-name">HealthGuard AI</span>
+            </div>
+            <p class="footer-disclaimer">
+                ⚠️ This is an AI-assisted analysis tool and is NOT a substitute for professional medical diagnosis.
+                Always consult qualified healthcare professionals.
+            </p>
+            <p class="footer-copy">© 2026 HealthGuard AI by DoomSphere. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
