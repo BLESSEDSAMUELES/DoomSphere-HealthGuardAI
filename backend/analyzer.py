@@ -174,10 +174,13 @@ class MedicalImageAnalyzer:
                 "feedback_history_count": len(self.feedback_history),
             }
             torch.save(brain_data, self.model_save_path)
-            size_kb = os.path.getsize(self.model_save_path) / 1024
-            print(f"[HealthGuard AI] Brain saved to {self.model_save_path} ({size_kb:.1f} KB)")
+            size_mb = os.path.getsize(self.model_save_path) / (1024 * 1024)
+            timestamp = time.strftime("%H:%M:%S")
+            print(f"\n[HealthGuard AI] ✅ BRAIN SAVED! Weights updated at {timestamp}")
+            print(f"                 File: {self.model_save_path}")
+            print(f"                 Size: {size_mb:.2f} MB")
         except Exception as e:
-            print(f"[HealthGuard AI] Warning: Could not save brain: {e}")
+            print(f"[HealthGuard AI] ❌ Warning: Could not save brain: {e}")
 
     def _load_brain(self):
         """Load a previously saved model brain from disk."""

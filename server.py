@@ -498,7 +498,8 @@ def train_on_dataset():
         try:
             if 'dataset_dir' in locals() and os.path.exists(dataset_dir):
                 shutil.rmtree(dataset_dir)
-                print(f"[HealthGuard AI] Cleaned up temp training files: {dataset_dir}")
+                print(f"[HealthGuard AI] 🚮 CLEANUP: Deleted temporary training folder")
+                print(f"                 Path: {dataset_dir}")
         except Exception as cleanup_error:
             print(f"[HealthGuard AI] Warning: Could not delete temp dir {dataset_dir}: {cleanup_error}")
 
