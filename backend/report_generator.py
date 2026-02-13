@@ -108,7 +108,7 @@ class MedicalReportPDF(FPDF):
         line_h_desc = 5
 
         # Description height via NbLines helper
-        desc = finding.get("description", "")
+        desc = sanitize_text(finding.get("description", ""))
         if len(desc) > 300:
             desc = desc[:297] + "..."
 
@@ -142,7 +142,7 @@ class MedicalReportPDF(FPDF):
         self.set_xy(card_x + content_margin, y_start + 3)
         self.set_font("Helvetica", "B", 10)
         self.set_text_color(*BLACK)
-        self.cell(120, line_h_title, f"{index}. {finding['finding']}", ln=False)
+        self.cell(120, line_h_title, f"{index}. {sanitize_text(finding['finding'])}", ln=False)
 
         # Confidence badge
         self.set_font("Helvetica", "B", 9)
@@ -212,13 +212,13 @@ def generate_report(
         for region, description in structures.items():
             pdf.set_font("Helvetica", "B", 9)
             pdf.set_text_color(*BLACK)
-            pdf.cell(50, 6, region + ":", ln=False)
+            pdf.cell(50, 6, sanitize_text(region) + ":", ln=False)
 
             pdf.set_font("Helvetica", "", 9)
             pdf.set_text_color(*BLACK)
             available_width = 190 - 50
 
-            pdf.multi_cell(available_width, 6, description)
+            pdf.multi_cell(available_width, 6, sanitize_text(description))
             pdf.ln(1)
         pdf.ln(4)
 
@@ -238,12 +238,12 @@ def generate_report(
         pdf.set_font("Helvetica", "", 8)
         pdf.set_text_color(*BLACK)
         for metric in detailed_report.get('metrics', []):
-            pdf.cell(50, 8, metric['parameter'], 1, 0, 'L')
-            pdf.cell(30, 8, metric['result'], 1, 0, 'C')
-            pdf.cell(40, 8, metric['normal'], 1, 0, 'C')
+            pdf.cell(50, 8, sanitize_text(metric['parameter']), 1, 0, 'L')
+            pdf.cell(30, 8, sanitize_text(str(metric['result'])), 1, 0, 'C')
+            pdf.cell(40, 8, sanitize_text(str(metric['normal'])), 1, 0, 'C')
 
             pdf.set_text_color(*BLACK)
-            pdf.cell(30, 8, metric['status'], 1, 1, 'C')
+            pdf.cell(30, 8, sanitize_text(metric['status']), 1, 1, 'C')
             pdf.set_text_color(*BLACK)
         pdf.ln(6)
 
@@ -252,17 +252,17 @@ def generate_report(
         for risk in detailed_report.get('risks', []):
             pdf.set_font("Helvetica", "B", 9)
             pdf.set_text_color(*BLACK)
-            pdf.cell(60, 6, risk['pathology'], ln=False)
+            pdf.cell(60, 6, sanitize_text(risk['pathology']), ln=False)
             pdf.set_font("Helvetica", "", 9)
-            pdf.cell(40, 6, f"Probability: {risk['probability']}", ln=False)
-            pdf.cell(0, 6, f"Risk: {risk['risk_category']}", ln=True)
+            pdf.cell(40, 6, f"Probability: {sanitize_text(str(risk['probability']))}", ln=False)
+            pdf.cell(0, 6, f"Risk: {sanitize_text(risk['risk_category'])}", ln=True)
         pdf.ln(6)
 
         # --- 5. Clinical Interpretation ---
         pdf.add_section_title("5. Clinical Interpretation Summary")
         pdf.set_font("Helvetica", "", 9)
         pdf.set_text_color(*BLACK)
-        pdf.multi_cell(0, 5, detailed_report.get('summary', ''))
+        pdf.multi_cell(0, 5, sanitize_text(detailed_report.get('summary', '')))
         pdf.ln(6)
 
         # --- 6. Recommendations ---
@@ -272,14 +272,14 @@ def generate_report(
             pdf.set_font("Helvetica", "", 9)
             pdf.cell(5, 5, "-", ln=False)
             available_width = 190 - 5
-            pdf.multi_cell(available_width, 5, rec)
+            pdf.multi_cell(available_width, 5, sanitize_text(rec))
         pdf.ln(6)
 
         # --- 7. AI Confidence ---
         pdf.add_section_title("7. AI Confidence Statement")
         pdf.set_font("Helvetica", "I", 9)
         pdf.set_text_color(*BLACK)
-        pdf.cell(0, 6, detailed_report.get('confidence', ''), ln=True)
+        pdf.cell(0, 6, sanitize_text(str(detailed_report.get('confidence', ''))), ln=True)
         pdf.ln(4)
 
     else:
@@ -304,7 +304,7 @@ def generate_report(
         pdf.ln(4)
 
         # --- Scan Type Description ---
-        desc = scan_type_result.get("description", "")
+        desc = sanitize_text(scan_type_result.get("description", ""))
         if desc:
             pdf.set_font("Helvetica", "I", 8)
             pdf.set_text_color(*BLACK)
