@@ -81,7 +81,7 @@ class MedicalReportPDF(FPDF):
     def add_section_title(self, title):
         self.set_font("Helvetica", "B", 13)
         self.set_text_color(*BLACK)
-        self.cell(0, 10, title, ln=True)
+        self.cell(0, 10, sanitize_text(title), ln=True)
         self.set_draw_color(*DARK_GREY_LINE)
         self.line(10, self.get_y(), 80, self.get_y())
         self.ln(4)
@@ -90,11 +90,11 @@ class MedicalReportPDF(FPDF):
     def add_key_value(self, key, value, severity=None):
         self.set_font("Helvetica", "B", 9)
         self.set_text_color(*BLACK)
-        self.cell(55, 7, key + ":", ln=False)
+        self.cell(55, 7, sanitize_text(key) + ":", ln=False)
 
         self.set_font("Helvetica", "", 9)
         self.set_text_color(*BLACK)
-        self.cell(0, 7, str(value), ln=True)
+        self.cell(0, 7, sanitize_text(str(value)), ln=True)
 
     # ── Finding card (auto-sized) ─────────────────────────────────
     def add_finding_card(self, finding: dict, index: int):
